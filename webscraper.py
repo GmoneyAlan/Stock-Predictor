@@ -22,10 +22,10 @@ def get_stock_data():
     #print(url.status_code)
     #print(url.headers)
     
+    #loop that scrolls till it reaches the bottom of the page
     for i in range(70):
         html = driver.find_element_by_tag_name('html')
         html.send_keys(Keys.END)
-    
         time.sleep(1)
     
     #At the end of the data collection the list should contain data involving the day (Month/day/year)
@@ -45,22 +45,19 @@ def get_stock_data():
     for i in title_html:
         title_list.append(i.get_text())
     
-    #Day is in spot 0 and close is in spot 5
-    
-    data_list = []
-    count = 0
+    data_list,data_set = [], []
+    MAX = len(title_list) 
     
     for i in data_html:
         data = i.get_text()
         if data.isdigit():
-            data_list.append(int(data))
+            data_set.append(int(data))
         else:
-            data_list.append(str(data))
+            data_set.append(str(data))
+        if MAX == len(data_set):
+            data_set = []
+            data_list.append(data_set)
 
-    print(data_list)
-    df = pd.DataFrame()
+    df = pd.DataFrame(data_list,columns=title_list)
     
-    
-if __name__ == "__main__":
-    
-    get_stock_data()
+    return df
