@@ -1,5 +1,6 @@
-import requests
 from bs4 import BeautifulSoup as bs
+import pandas as pd
+from selenium import webdriver
 
 '''
 The stock we are scraping Apple
@@ -8,8 +9,15 @@ The stock we are scraping Apple
     https://finance.yahoo.com/quote/AAPL/history?period1=790128000&period2=1597449600&interval=1d&filter=history&frequency=1d
 '''
 def get_stock_data():
-    url = requests.get("https://finance.yahoo.com/quote/AAPL/history?period1=790128000&period2=1597449600&interval=1d&filter=history&frequency=1d")
+    #url that we are scraping
+    url = "https://finance.yahoo.com/quote/AAPL/history?period1=790128000&period2=1597449600&interval=1d&filter=history&frequency=1d"
+
+    #Selenium opens scroll on 'url' and scrolls all the way down 
+    driver = webdriver.Chrome(r'C:\Users\alan2\Desktop\Projects\Stock-Predictor/chromedriver.exe')
+    driver.get(url)
     
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+   
     #Testing the page to make sure it is working 
     #print(url.status_code)
     #print(url.headers)
@@ -19,28 +27,31 @@ def get_stock_data():
         # (n, $) where n is the day and $ is the closing price
         
     #Gets page content and stores it in index_html
-    index_html = url.content
+    index_html = driver.page_source
     
-    soup = bs(index_html, 'lxml') 
-    df = soup.find('tbody').find_all('span')
+    soup = bs(index_html, 'html.parser') 
+    data_html = soup.find('tbody').find_all('span')
+    title_html = soup.find('thead').find_all('span')
     
-    title = ['Day', 'Close']
+    title_list = []
+    for i in title_html:
+        title_list.append(i.get_text())
     
-    #Day is in spot and close is in spot 5
+    #Day is in spot 0 and close is in spot 5
     
-    df_list = []
+    data_list = []
     count = 0
     
-    for i in df:
+    for i in data_html:
         data = i.get_text()
         if data.isdigit():
-            df_list.append(int(data))
+            data_list.append(int(data))
         else:
-            df_list.append(str(data))
+            data_list.append(str(data))
 
-    for i in df_list:
-        print(i)
-    print('Data printed')
+    print(data_list)
+    df = pd.DataFrame()
+    
     
 if __name__ == "__main__":
     
