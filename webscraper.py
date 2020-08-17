@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
 
 '''
 The stock we are scraping Apple
@@ -16,11 +18,15 @@ def get_stock_data():
     driver = webdriver.Chrome(r'C:\Users\alan2\Desktop\Projects\Stock-Predictor/chromedriver.exe')
     driver.get(url)
     
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-   
     #Testing the page to make sure it is working 
     #print(url.status_code)
     #print(url.headers)
+    
+    for i in range(70):
+        html = driver.find_element_by_tag_name('html')
+        html.send_keys(Keys.END)
+    
+        time.sleep(1)
     
     #At the end of the data collection the list should contain data involving the day (Month/day/year)
         # As well as the closing price of the day
@@ -28,6 +34,8 @@ def get_stock_data():
         
     #Gets page content and stores it in index_html
     index_html = driver.page_source
+    
+    driver.close()
     
     soup = bs(index_html, 'html.parser') 
     data_html = soup.find('tbody').find_all('span')
