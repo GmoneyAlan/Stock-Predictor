@@ -23,6 +23,7 @@ def get_stock_data():
     #print(url.headers)
     
     #loop that scrolls till it reaches the bottom of the page
+    
     for i in range(70):
         html = driver.find_element_by_tag_name('html')
         html.send_keys(Keys.END)
@@ -50,13 +51,17 @@ def get_stock_data():
     
     for i in data_html:
         data = i.get_text()
+        if data == 'Dividend':
+            data_set = []
+            continue
         if data.isdigit():
             data_set.append(int(data))
         else:
             data_set.append(str(data))
         if MAX == len(data_set):
-            data_set = []
             data_list.append(data_set)
+            print(data_set)
+            data_set = []
 
     df = pd.DataFrame(data_list,columns=title_list)
     
