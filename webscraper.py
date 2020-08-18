@@ -51,7 +51,7 @@ def get_stock_data():
     
     for i in data_html:
         data = i.get_text()
-        if data == 'Dividend':
+        if data == 'Dividend' or data == 'Stock Split':
             data_set = []
             continue
         if data.isdigit():
@@ -60,9 +60,7 @@ def get_stock_data():
             data_set.append(str(data))
         if MAX == len(data_set):
             data_list.append(data_set)
-            print(data_set)
             data_set = []
-
     df = pd.DataFrame(data_list,columns=title_list)
     
     return df
